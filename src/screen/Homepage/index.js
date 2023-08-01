@@ -18,7 +18,6 @@ const Homepage = () => {
 
     return (
         <SafeAreaView style={styles.container}>
-            {/* <Text style={styles.Heading}>Instagram Clone</Text> */}
             <SwiperFlatList
                 autoplay
                 vertical={true}
