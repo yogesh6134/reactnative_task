@@ -14,6 +14,8 @@ export const WIDTH = {
 export const HEIGHT = {
   h0: DIMENSIONS.WINDOW_HEIGHT,
   h15: DIMENSIONS.WINDOW_HEIGHT / 80,
+  h50: DIMENSIONS.WINDOW_HEIGHT / 15,
+
 };
 
 export const FONTS = {

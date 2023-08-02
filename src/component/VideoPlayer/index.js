@@ -1,39 +1,61 @@
-import React, { useRef, useState } from 'react';
-import { View } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Image, TouchableOpacity, View, Text, ActivityIndicator } from 'react-native';
 import Video from 'react-native-video';
 import styles from './styles';
-import videoUrls from '../../mock/videourl';
+import { IMAGES } from '../../assets';
 
-const VideoPlayer = ({ videoUri }) => {
-    console.log('video url', videoUri)
+const VideoPlayer = ({ videoUri, index, currentIndex }) => {
+    // console.log('video url', videoUri, index, currentIndex)
     const videoRef = useRef(null);
-    const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+    const [mute, setMute] = useState(false);
+    const [showBuffer, setShowBuffer] = useState(false);
 
 
-    const onEnd = () => {
-        // Play the next video when the current video ends
-        setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % videoUrls.length);
-    };
-    function onBuffer() {
-        console.log('-----bu--gg--er')
+    const onBuffer = buffer => {
+        if (buffer.isBuffering) {
+            setShowBuffer(true)
+        } else {
+            setShowBuffer(false)
+        }
     }
-    const videoError = () => {
-        console.log('error--')
+
+    const videoError = error => {
+        console.log('error--', error)
     }
+
+    const onMute = useCallback(() => {
+        setMute(!mute)
+    }, [mute])
+
     return (
         <View style={styles.container}>
-            <Video
-                ref={videoRef}
-                source={{ uri: videoUri }}
-                style={styles.video}
-                paused={currentVideoIndex !== 0} // Pause all videos except the current one
-                resizeMode="cover"
-                // repeat={true}
-                // onEnd={onEnd}
-                onBuffer={onBuffer}                // Callback when remote video is buffering
-                onError={videoError}
-            />
-            {/* <Text>{videoUri}</Text> */}
+            <TouchableOpacity style={styles.video} onPress={onMute}>
+                <Video
+                    ref={videoRef}
+                    source={{ uri: videoUri }}
+                    muted={mute}
+                    paused={currentIndex !== index}
+                    repeat={true}
+                    controls={false}
+                    resizeMode="cover"
+                    onBuffer={onBuffer}
+                    onError={videoError}
+                    style={styles.video}
+                />
+            </TouchableOpacity>
+
+            {mute && <Image
+                source={IMAGES.MuteIcon}
+                style={styles.muteIcon}
+            />}
+
+            {!showBuffer ?
+                <Text style={styles.ImageText}>{videoUri}</Text>
+                :
+                <View style={styles.loader}>
+                    <Text style={styles.loadingText}>Loading...</Text>
+                    <ActivityIndicator size={'medium'} />
+                </View>}
         </View>
     );
 };
